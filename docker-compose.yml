@@ -1,0 +1,24 @@
+version: '3'
+
+services: 
+  nginx:
+    image: nginx
+    container_name: api.nginx
+    ports: 
+      - "80:80"
+    volumes: 
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./nginx/uwsgi_params:/etc/nginx/uwsgi_params
+      - ./static:/static
+    depends_on: 
+      - python
+
+  python:
+    build: ./python
+    container_name: api.python
+    command: uwsgi --socket :8001 --module django_rest_test.wsgi
+    volumes: 
+      - ./django_rest_test:/code
+      - ./static:/static
+    expose: 
+      - "8001"
